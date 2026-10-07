@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================================================================
+   GLASS MONOLITH — global base
+   Monospace ONLY. Sharp corners ONLY. Motion via Framer Motion.
+   (No CSS keyframe animations anywhere in this file by design.)
+   ================================================================ */
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: #030304;
+  color: #ededef;
+  font-family: 'JetBrains Mono', 'Space Mono', ui-monospace, monospace;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ABSOLUTE RULE: no rounded corners anywhere in the app. */
+* {
+  border-radius: 0 !important;
+}
+
+::selection {
+  background: #00ff66;
+  color: #030304;
+}
+
+/* ---- Scrollbars: thin chrome rails ---- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3a3f45 transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #3a3f45;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #00ff66;
+}
+
+/* ---- Recharts polish ---- */
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none;
+}
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+/* ---- Number inputs: hide spinners (we use Slide-to-Tension instead) ---- */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ---- HUD background helpers ---- */
+.bg-blueprint-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.bg-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.028) 0px,
+    rgba(255, 255, 255, 0.028) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+.bg-vignette {
+  background: radial-gradient(ellipse 90% 80% at 50% 40%, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Thin chrome divider with a neon core. */
+.hud-divider {
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 102, 0.6) 20%, rgba(0, 255, 102, 0.6) 80%, transparent);
+  height: 1px;
+}
+
+/* Triangle trend markers (pure CSS, sharp). */
+.tri-up {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid #00ff66;
+  filter: drop-shadow(0 0 4px rgba(0, 255, 102, 0.8));
+}
+.tri-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid #ff2d55;
+  filter: drop-shadow(0 0 4px rgba(255, 45, 85, 0.8));
+}

@@ -1,0 +1,32 @@
+# deps
+node_modules/
+
+# builds
+dist/
+release/
+out/
+
+# env (example is committed)
+.env
+.env.local
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# python / local AI service
+__pycache__/
+*.pyc
+.venv/
+venv/
+local_ai_service/models/
+local_ai_service/*.wav
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
