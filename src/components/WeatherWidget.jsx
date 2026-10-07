@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CloudSun, Droplets, Wind, CloudRain, Cloud, Sun, CloudLightning } from 'lucide-react';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 const COND_ICON = {
   CLEAR: Sun,
@@ -26,7 +26,7 @@ export default function WeatherWidget() {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <div className="clip-cut-sm flex h-full cursor-default items-center gap-3 border border-white/20 bg-black/60 px-3 py-1.5 backdrop-blur-2xl transition-colors hover:border-toxic/60">
+      <div className="clip-cut-sm flex h-full cursor-default items-center gap-3 border border-white/10 bg-black/60 px-3 py-1.5 backdrop-blur-2xl transition-colors hover:border-toxic/60">
         <CloudSun size={22} strokeWidth={1.5} className="shrink-0 text-bone" />
         <div className="leading-none">
           <div className="text-xl font-bold tracking-tight text-bone">
@@ -53,7 +53,7 @@ export default function WeatherWidget() {
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="clip-cut-sm glass-deep absolute left-0 top-[calc(100%+8px)] z-50 w-64 border border-white/20 shadow-panel"
+            className="clip-cut-sm glass-deep absolute left-0 top-[calc(100%+8px)] z-50 w-64 border border-white/10 shadow-panel"
           >
             <div className="border-b border-white/10 px-3 py-2 text-[9px] tracking-[0.3em] text-chrome-dim">
               7-DAY FORECAST <span className="text-toxic">///</span> {weather.city}

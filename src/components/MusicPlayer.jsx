@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useAnimationControls } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, Disc3, ListMusic } from 'lucide-react';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 /**
  * MusicPlayer — narrow glass bar (cut corners per the no-radius rule)
@@ -35,7 +35,7 @@ export default function MusicPlayer() {
 
   return (
     <div className="relative w-full">
-      <div className="clip-cut-sm flex h-full w-full items-center gap-2 border border-white/20 bg-black/60 py-1.5 pl-2 pr-3 backdrop-blur-2xl transition-colors hover:border-toxic/60">
+      <div className="clip-cut-sm flex h-full w-full items-center gap-2 border border-white/10 bg-black/60 py-1.5 pl-2 pr-3 backdrop-blur-2xl transition-colors hover:border-toxic/60">
         {/* Transport */}
         <div className="flex shrink-0 items-center">
           <button
@@ -107,12 +107,12 @@ export default function MusicPlayer() {
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="clip-cut-sm glass-deep absolute right-0 top-[calc(100%+8px)] z-50 w-80 border border-white/20 shadow-panel"
+            className="clip-cut-sm glass-deep absolute right-0 top-[calc(100%+8px)] z-50 w-80 border border-white/10 shadow-panel"
           >
             <div className="flex gap-3 p-3">
               {/* Album art: chrome disc, spins only while playing (Framer Motion). */}
               <div
-                className="clip-quad relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden border border-white/20"
+                className="clip-quad relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden border border-white/10"
                 style={{
                   background: `conic-gradient(from 40deg, hsl(${track.hue} 60% 8%), hsl(${track.hue} 90% 22%), hsl(${track.hue} 60% 8%))`,
                 }}

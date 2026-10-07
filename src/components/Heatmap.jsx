@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 const LEVEL_STYLE = [
-  'border border-white/15 bg-white/[0.02]',
-  'bg-toxic/25 shadow-[0_0_6px_rgba(0,255,102,0.35)]',
-  'bg-toxic/50 shadow-[0_0_8px_rgba(0,255,102,0.5)]',
+  'border border-white/10 bg-white/[0.02]',
+  'bg-toxic/25 shadow-[0_0_6px_rgba(16,185,129,0.35)]',
+  'bg-toxic/50 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
   'bg-toxic/80 shadow-glow-green',
   'bg-[#eafff0] shadow-glow-green',
 ];

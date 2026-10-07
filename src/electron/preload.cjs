@@ -13,14 +13,21 @@ function on(channel, cb) {
 contextBridge.exposeInMainWorld('electronAPI', {
   platform: process.platform,
 
-  /** Run `git pull` in the host. Resolves { ok, code }. */
-  gitPull: () => ipcRenderer.invoke('sys:git-pull'),
+  /** Run `git pull origin main` in the host. Resolves { ok, code, stdout, stderr }. */
+  updateApp: () => ipcRenderer.invoke('update-app'),
 
-  /** Streamed git-pull log lines: ({ stream: 'out'|'err'|'sys', line }). */
-  onGitPullLog: (cb) => on('sys:git-pull:log', cb),
+  /** Streamed update logs: ({ stream: 'out'|'err'|'sys', line }). */
+  onUpdateLog: (cb) => on('update-app:log', cb),
 
   /** Fired by the Alt+Space global shortcut. */
-  onVoiceToggle: (cb) => on('voice:toggle', cb),
+  onVoiceInputOpen: (cb) => on('voice-input-open', cb),
+
+  /** Frameless window controls. */
+  winMinimize: () => ipcRenderer.invoke('win:minimize'),
+  winToggleMaximize: () => ipcRenderer.invoke('win:toggle-maximize'),
+  winClose: () => ipcRenderer.invoke('win:close'),
+  winIsMaximized: () => ipcRenderer.invoke('win:is-maximized'),
+  onMaximizeChanged: (cb) => on('win:maximize-changed', cb),
 
   /** Open an https URL in the system browser. */
   openExternal: (url) => ipcRenderer.invoke('sys:open-external', url),

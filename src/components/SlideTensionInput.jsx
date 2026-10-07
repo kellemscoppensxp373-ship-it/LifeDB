@@ -1,13 +1,16 @@
 import { useRef, useState } from 'react';
 import { motion, useMotionValue, useTransform, useAnimationControls } from 'framer-motion';
 import { ChevronsRight } from 'lucide-react';
+import { useStore } from '../store/useStore.js';
 
 /**
- * Slide-to-Tension — numeric entry without text inputs.
- * Drag the handle right: visual tension builds, numbers count up fast.
- * Release: the container flashes to confirm the value.
+ * SlideTensionInput — numeric entry without text inputs.
+ * Drag the handle right: the bar fills with visual tension while numbers
+ * tick up rapidly. Release: the component flashes WHITE and the value
+ * is saved to Zustand (keyed by `id`).
  */
-export default function SlideToTension({
+export default function SlideTensionInput({
+  id,
   label,
   unit = '',
   min = 0,
@@ -19,6 +22,7 @@ export default function SlideToTension({
   trackPx = 190,
   compact = false,
 }) {
+  const setTensionValue = useStore((s) => s.setTensionValue);
   const [val, setVal] = useState(value ?? min);
   const x = useMotionValue(0);
   const flash = useAnimationControls();
@@ -29,9 +33,9 @@ export default function SlideToTension({
     progress,
     [0, 0.5, 1],
     [
-      '0 0 0px rgba(0,255,102,0)',
-      '0 0 14px rgba(0,255,102,0.45)',
-      '0 0 26px rgba(0,255,102,0.9)',
+      '0 0 0px rgba(16,185,129,0)',
+      '0 0 14px rgba(16,185,129,0.45)',
+      '0 0 26px rgba(16,185,129,0.9)',
     ],
   );
 
@@ -52,11 +56,12 @@ export default function SlideToTension({
   };
 
   const handleRelease = () => {
-    // Flash container to confirm.
+    // Flash WHITE to confirm + persist to Zustand.
     flash.start({
-      backgroundColor: ['rgba(0,255,102,0.28)', 'rgba(0,0,0,0)'],
-      transition: { duration: 0.55, ease: 'easeOut' },
+      backgroundColor: ['rgba(255,255,255,0.85)', 'rgba(255,255,255,0)'],
+      transition: { duration: 0.5, ease: 'easeOut' },
     });
+    if (id) setTensionValue(id, val);
     onConfirm?.(val);
   };
 
@@ -65,7 +70,7 @@ export default function SlideToTension({
   return (
     <motion.div
       animate={flash}
-      className={`clip-cut-sm select-none border border-white/20 bg-black/50 backdrop-blur-xl ${
+      className={`clip-cut-sm select-none rounded-none border border-white/10 bg-black/50 backdrop-blur-xl ${
         compact ? 'p-2' : 'p-3'
       }`}
     >

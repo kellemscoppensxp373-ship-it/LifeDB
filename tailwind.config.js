@@ -2,7 +2,14 @@ import plugin from 'tailwindcss/plugin';
 
 /**
  * GLASS MONOLITH cut-corner system.
- * Sharp 45-degree cuts via clip-path polygon. NO rounded corners anywhere.
+ * Sharp 45-degree cuts via clip-path polygon. NO rounded corners anywhere
+ * (major containers additionally carry `rounded-none`).
+ *
+ * Palette (strict):
+ *   deep space  -> zinc-950  #09090B
+ *   chrome      ->           #E5E7EB
+ *   blood red   ->           #DC2626
+ *   toxic green ->           #10B981
  */
 const CUT_SIZES = { sm: '8px', md: '14px', lg: '22px' };
 
@@ -28,32 +35,32 @@ export default {
       },
       colors: {
         void: {
-          950: '#030304', // deep dark space background
-          900: '#050607',
-          800: '#0a0d0e',
-          700: '#111517',
+          950: '#09090b', // zinc-950 deep space background
+          900: '#0d0d10',
+          800: '#141417',
+          700: '#1c1e22',
         },
         chrome: {
-          DEFAULT: '#c8ccd2', // chrome silver
-          dim: '#7d838c',
-          faint: '#3a3f45',
+          DEFAULT: '#e5e7eb', // chrome silver
+          dim: '#a1a1aa',
+          faint: '#3f3f46',
         },
         blood: {
-          DEFAULT: '#ff2d55', // blood red
-          dim: '#8f1030',
-          deep: '#3d0513',
+          DEFAULT: '#dc2626', // blood red
+          dim: '#7f1d1d',
+          deep: '#450a0a',
         },
         toxic: {
-          DEFAULT: '#00ff66', // toxic green
-          dim: '#0a5c2c',
-          deep: '#03240f',
+          DEFAULT: '#10b981', // toxic green
+          dim: '#065f46',
+          deep: '#022c22',
         },
-        bone: '#ededef', // cold white
+        bone: '#e5e7eb', // cold white (chrome)
       },
       boxShadow: {
-        'glow-green': '0 0 12px rgba(0,255,102,0.55), 0 0 42px rgba(0,255,102,0.18)',
-        'glow-red': '0 0 12px rgba(255,45,85,0.6), 0 0 42px rgba(255,45,85,0.22)',
-        'glow-white': '0 0 10px rgba(237,237,239,0.5), 0 0 34px rgba(237,237,239,0.16)',
+        'glow-green': '0 0 12px rgba(16,185,129,0.55), 0 0 42px rgba(16,185,129,0.18)',
+        'glow-red': '0 0 12px rgba(220,38,38,0.6), 0 0 42px rgba(220,38,38,0.22)',
+        'glow-white': '0 0 10px rgba(229,231,235,0.5), 0 0 34px rgba(229,231,235,0.16)',
         'panel': '0 24px 80px rgba(0,0,0,0.65)',
       },
       backdropBlur: {
@@ -88,12 +95,12 @@ export default {
         },
 
         // ---- Neon text ----
-        '.text-glow-green': { textShadow: '0 0 8px rgba(0,255,102,0.8), 0 0 28px rgba(0,255,102,0.35)' },
-        '.text-glow-red': { textShadow: '0 0 8px rgba(255,45,85,0.8), 0 0 28px rgba(255,45,85,0.35)' },
-        '.text-glow-white': { textShadow: '0 0 8px rgba(237,237,239,0.65), 0 0 26px rgba(237,237,239,0.28)' },
+        '.text-glow-green': { textShadow: '0 0 8px rgba(16,185,129,0.8), 0 0 28px rgba(16,185,129,0.35)' },
+        '.text-glow-red': { textShadow: '0 0 8px rgba(220,38,38,0.8), 0 0 28px rgba(220,38,38,0.35)' },
+        '.text-glow-white': { textShadow: '0 0 8px rgba(229,231,235,0.65), 0 0 26px rgba(229,231,235,0.28)' },
 
         // ---- HUD chrome hairline borders ----
-        '.border-chrome': { borderColor: 'rgba(255,255,255,0.20)' },
+        '.border-chrome': { borderColor: 'rgba(255,255,255,0.10)' },
       });
     }),
   ],

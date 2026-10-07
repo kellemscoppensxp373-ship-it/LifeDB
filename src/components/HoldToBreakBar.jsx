@@ -5,11 +5,11 @@ import { Flame, Skull } from 'lucide-react';
 const HOLD_MS = 1500;
 
 /**
- * Hold-to-Break — streak reset for negative habits.
- * Press and hold: bar shakes, bleeds red; after 1.5s it SHATTERS
- * (Framer Motion scale/opacity glitch) and the streak resets.
+ * HoldToBreakBar — streak reset for negative habits.
+ * Click and hold: the bar shakes (Framer Motion keyframes), turns red,
+ * and after 1.5s it SHATTERS (opacity 0, scale 1.2), resetting the streak.
  */
-export default function HoldToBreak({ label, streak, unit = 'DAYS', onReset }) {
+export default function HoldToBreakBar({ label, streak, unit = 'DAYS', onReset }) {
   const controls = useAnimationControls();
   const progress = useMotionValue(0);
   const tweenRef = useRef(null);
@@ -25,33 +25,37 @@ export default function HoldToBreak({ label, streak, unit = 'DAYS', onReset }) {
     controls.start({
       x: 0,
       rotate: 0,
+      scale: 1,
+      opacity: 1,
       backgroundColor: 'rgba(0,0,0,0)',
-      borderColor: 'rgba(255,255,255,0.2)',
+      borderColor: 'rgba(255,255,255,0.1)',
       transition: { duration: 0.25 },
     });
   };
 
   const shatter = async () => {
     setHolding(false);
-    // Glitch-shatter keyframes: scale + opacity + positional jitter.
+    // SHATTER: blow out to scale 1.2 while fading to opacity 0,
+    // with a positional glitch on the way out.
     await controls.start({
-      scale: [1, 1.12, 0.86, 1.25, 0.7, 0],
-      opacity: [1, 1, 0.65, 0.9, 0.45, 0],
-      x: [0, 9, -13, 8, -18, 0],
-      rotate: [0, 1.2, -2, 2.5, -3, 0],
-      transition: { duration: 0.55, ease: 'easeIn' },
+      scale: [1, 1.06, 1.2],
+      opacity: [1, 1, 0],
+      x: [0, 10, -14],
+      rotate: [0, 1.5, -2],
+      filter: ['brightness(1)', 'brightness(1.6)', 'brightness(2.2)'],
+      transition: { duration: 0.45, ease: 'easeIn' },
     });
     onReset?.();
     setShattered(true);
     setFlashMsg('STREAK SHATTERED');
-    // Re-materialize clean.
-    controls.set({ scale: 0.92, opacity: 0, x: 0, rotate: 0 });
+    // Re-materialize clean from scale 0.94.
+    controls.set({ scale: 0.94, opacity: 0, x: 0, rotate: 0, filter: 'brightness(1)' });
     progress.set(0);
     await controls.start({
       scale: 1,
       opacity: 1,
-      backgroundColor: ['rgba(255,45,85,0.35)', 'rgba(0,0,0,0)'],
-      borderColor: 'rgba(255,255,255,0.2)',
+      backgroundColor: ['rgba(220,38,38,0.35)', 'rgba(0,0,0,0)'],
+      borderColor: 'rgba(255,255,255,0.1)',
       transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
     });
     setTimeout(() => {
@@ -66,8 +70,8 @@ export default function HoldToBreak({ label, streak, unit = 'DAYS', onReset }) {
     // Shake + bleed red while held.
     controls.start({
       x: [0, -7, 7, -5, 5, -3, 3, 0],
-      backgroundColor: 'rgba(255,45,85,0.16)',
-      borderColor: '#ff2d55',
+      backgroundColor: 'rgba(220,38,38,0.16)',
+      borderColor: '#DC2626',
       transition: { x: { repeat: Infinity, duration: 0.26 }, duration: 0.3 },
     });
     tweenRef.current = animate(progress, 1, {
@@ -88,7 +92,7 @@ export default function HoldToBreak({ label, streak, unit = 'DAYS', onReset }) {
       onPointerUp={cancel}
       onPointerLeave={() => holding && cancel()}
       onContextMenu={(e) => e.preventDefault()}
-      className="clip-cut-sm relative cursor-pointer select-none overflow-hidden border border-white/20 bg-black/50 p-3 backdrop-blur-xl"
+      className="clip-cut-sm relative cursor-pointer select-none overflow-hidden rounded-none border border-white/10 bg-black/50 p-3 backdrop-blur-xl"
     >
       {/* Hold progress bleed */}
       <motion.div

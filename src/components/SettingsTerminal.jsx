@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Settings, Terminal, Github, X, Palette, Database, Download, Upload, Trash2 } from 'lucide-react';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 const TABS = [
   { id: 'sync', label: 'SYSTEM / SYNC', icon: Terminal },
@@ -41,18 +41,18 @@ export default function SettingsTerminal() {
   const runGitPull = async () => {
     if (busy) return;
     setBusy(true);
-    push('cmd', '$ git pull --ff-only');
+    push('cmd', '$ git pull origin main');
 
     try {
-      if (window.electronAPI?.gitPull) {
+      if (window.electronAPI?.updateApp) {
         // ---- Real path: Electron main runs child_process.exec('git pull') ----
-        const detach = window.electronAPI.onGitPullLog?.(({ stream, line }) => {
+        const detach = window.electronAPI.onUpdateLog?.(({ stream, line }) => {
           String(line)
             .split('\n')
             .filter(Boolean)
             .forEach((l) => push(stream === 'err' ? 'err' : 'out', l));
         });
-        const res = await window.electronAPI.gitPull();
+        const res = await window.electronAPI.updateApp();
         if (typeof detach === 'function') detach();
         if (res?.ok) {
           push('ok', `[SYNC OK] exit code ${res.code} — already homogeneous.`);
@@ -93,7 +93,7 @@ export default function SettingsTerminal() {
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}
         className={`clip-cut-sm fixed bottom-11 left-4 z-30 border bg-black/70 p-2.5 backdrop-blur-2xl transition-colors ${
-          open ? 'border-toxic/70 text-toxic' : 'border-white/20 text-chrome hover:border-toxic/50 hover:text-toxic'
+          open ? 'border-toxic/70 text-toxic' : 'border-white/10 text-chrome hover:border-toxic/50 hover:text-toxic'
         }`}
         title="Settings"
       >
@@ -113,7 +113,7 @@ export default function SettingsTerminal() {
             animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
             exit={{ opacity: 0, x: -26, filter: 'blur(6px)' }}
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="clip-cut glass-deep fixed bottom-11 left-14 z-30 flex h-[380px] w-[min(560px,calc(100vw-5rem))] flex-col border border-white/20 shadow-panel"
+            className="clip-cut glass-deep fixed bottom-11 left-14 z-30 flex h-[380px] w-[min(560px,calc(100vw-5rem))] flex-col border border-white/10 shadow-panel"
           >
             {/* Header + tabs */}
             <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
@@ -125,7 +125,7 @@ export default function SettingsTerminal() {
                     className={`clip-tag-sm flex items-center gap-1.5 border px-2.5 py-1.5 text-[10px] tracking-[0.2em] transition-colors ${
                       tab === t.id
                         ? 'border-toxic/60 bg-toxic/10 text-toxic'
-                        : 'border-transparent text-chrome-dim hover:border-white/20 hover:text-bone'
+                        : 'border-transparent text-chrome-dim hover:border-white/10 hover:text-bone'
                     }`}
                   >
                     <t.icon size={12} strokeWidth={1.75} />
@@ -226,7 +226,7 @@ function AppearanceTab() {
             className={`clip-cut-sm flex items-center gap-2 border px-2.5 py-2.5 text-[10px] tracking-[0.18em] transition-colors ${
               accent === o.id
                 ? 'border-toxic/70 bg-toxic/10 text-bone'
-                : 'border-white/15 text-chrome-dim hover:border-white/30 hover:text-bone'
+                : 'border-white/10 text-chrome-dim hover:border-white/30 hover:text-bone'
             }`}
           >
             <span className={`h-3 w-3 ${o.swatch}`} />
@@ -274,13 +274,13 @@ function DataTab({ push, setTab }) {
       <div className="mt-2 flex gap-2">
         <button
           onClick={doExport}
-          className="clip-cut-sm flex flex-1 items-center justify-center gap-2 border border-white/20 bg-white/[0.04] px-3 py-2.5 text-[10px] tracking-[0.25em] text-bone transition-colors hover:border-toxic/60 hover:text-toxic"
+          className="clip-cut-sm flex flex-1 items-center justify-center gap-2 border border-white/10 bg-white/[0.04] px-3 py-2.5 text-[10px] tracking-[0.25em] text-bone transition-colors hover:border-toxic/60 hover:text-toxic"
         >
           <Download size={13} /> EXPORT JSON
         </button>
         <button
           onClick={() => fileRef.current?.click()}
-          className="clip-cut-sm flex flex-1 items-center justify-center gap-2 border border-white/20 bg-white/[0.04] px-3 py-2.5 text-[10px] tracking-[0.25em] text-bone transition-colors hover:border-toxic/60 hover:text-toxic"
+          className="clip-cut-sm flex flex-1 items-center justify-center gap-2 border border-white/10 bg-white/[0.04] px-3 py-2.5 text-[10px] tracking-[0.25em] text-bone transition-colors hover:border-toxic/60 hover:text-toxic"
         >
           <Upload size={13} /> IMPORT JSON
         </button>

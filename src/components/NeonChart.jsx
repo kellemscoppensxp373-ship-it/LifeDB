@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from 'recharts';
 import { animate } from 'framer-motion';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 /** Typewriter-effect number: tweens to each new value via Framer Motion. */
 function TypewriterNumber({ value }) {
@@ -85,9 +85,9 @@ export default function NeonChart() {
           <AreaChart data={series} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
             <defs>
               <linearGradient id="neonFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#00ff66" stopOpacity={0.5} />
-                <stop offset="55%" stopColor="#00ff66" stopOpacity={0.12} />
-                <stop offset="100%" stopColor="#00ff66" stopOpacity={0} />
+                <stop offset="0%" stopColor="#10B981" stopOpacity={0.5} />
+                <stop offset="55%" stopColor="#10B981" stopOpacity={0.12} />
+                <stop offset="100%" stopColor="#10B981" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="baseFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#7d838c" stopOpacity={0.18} />
@@ -108,7 +108,7 @@ export default function NeonChart() {
               axisLine={false}
               width={40}
             />
-            <Tooltip content={<TargetTooltip />} cursor={{ stroke: '#00ff66', strokeOpacity: 0.35, strokeDasharray: '3 3' }} />
+            <Tooltip content={<TargetTooltip />} cursor={{ stroke: '#10B981', strokeOpacity: 0.35, strokeDasharray: '3 3' }} />
             <Area
               type="monotone"
               dataKey="baseline"
@@ -121,12 +121,12 @@ export default function NeonChart() {
             <Area
               type="monotone"
               dataKey="output"
-              stroke="#00ff66"
+              stroke="#10B981"
               strokeWidth={3}
               fill="url(#neonFill)"
               dot={false}
-              activeDot={{ r: 4, fill: '#030304', stroke: '#00ff66', strokeWidth: 2 }}
-              style={{ filter: 'drop-shadow(0 0 7px rgba(0,255,102,0.9))' }}
+              activeDot={{ r: 4, fill: '#09090b', stroke: '#10B981', strokeWidth: 2 }}
+              style={{ filter: 'drop-shadow(0 0 7px rgba(16,185,129,0.9))' }}
             />
           </AreaChart>
         </ResponsiveContainer>

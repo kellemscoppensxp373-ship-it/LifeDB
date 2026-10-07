@@ -2,15 +2,17 @@ import React, { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
-import { motion } from 'framer-motion';
+import { animate, motion } from 'framer-motion';
 import { Focus, RotateCcw, MousePointer2 } from 'lucide-react';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 /**
  * Avatar3D — React Three Fiber muscle avatar.
  *
- * PERFORMANCE: frameloop="demand" — nothing renders while idle.
+ * PERFORMANCE CRITICAL: frameloop="demand" — nothing renders while idle.
  * Every interactive element manually calls invalidate().
+ * CAMERA: Framer Motion drives the dolly zoom (animate() tween lerping the
+ * camera pose per tick); drei OrbitControls handles user orbiting.
  * VISUAL: crystal sharp — NO depth of field, NO blur postprocessing.
  * Supports a generic humanoid .glb via VITE_AVATAR_URL, otherwise the
  * built-in procedural muscle model is used.
@@ -38,6 +40,9 @@ const MUSCLE_LABEL = {
   glutes: 'GLUTES / HAMS — TARGET LOCKED',
 };
 
+/** Predefined mesh registry — every muscle mesh is named from this list. */
+export const MESH_TARGETS = ['Lats', 'Chest', 'Shoulders', 'Biceps', 'Quads', 'Glutes'];
+
 // Keywords for matching .glb mesh names to a muscle group.
 const MUSCLE_KEYWORDS = {
   lats: ['lat', 'back', 'dorsal', 'trapezius_low'],
@@ -48,11 +53,13 @@ const MUSCLE_KEYWORDS = {
   glutes: ['glut', 'butt', 'hip', 'ham'],
 };
 
-const NEON = '#00ff66';
+const NEON = '#10b981';
 const DARK_MATTER = '#16191d';
 
 /* ------------------------------------------------------------------ */
-/* CameraRig — fast but smooth dolly zoom onto the targeted muscle.    */
+/* CameraRig — Framer Motion dolly zoom onto the targeted muscle.      */
+/* A single animate() tween drives position + target + fov; each tick  */
+/* wakes exactly one demand frame.                                     */
 /* ------------------------------------------------------------------ */
 function CameraRig({ muscle }) {
   const dest = useMemo(() => {
@@ -60,33 +67,33 @@ function CameraRig({ muscle }) {
     return { pos: new THREE.Vector3(...t.pos), tgt: new THREE.Vector3(...t.tgt), fov: t.fov };
   }, [muscle]);
 
-  const { invalidate } = useThree((s) => ({ invalidate: s.invalidate }));
+  const invalidate = useThree((s) => s.invalidate);
 
-  // Kick the demand loop when the target changes.
   useEffect(() => {
-    invalidate();
-  }, [muscle, invalidate]);
+    const { camera, controls } = useThree.getState();
+    const fromPos = camera.position.clone();
+    const fromTgt = controls ? controls.target.clone() : new THREE.Vector3();
+    const fromFov = camera.fov;
 
-  useFrame((state, rawDt) => {
-    const dt = Math.min(rawDt, 0.05);
-    const k = 1 - Math.exp(-5.2 * dt); // fast attack, smooth settle
-    const cam = state.camera;
-    cam.position.lerp(dest.pos, k);
+    const flight = animate(0, 1, {
+      duration: 0.85,
+      ease: [0.22, 1, 0.36, 1], // fast attack, heavy smooth settle
+      onUpdate: (v) => {
+        camera.position.lerpVectors(fromPos, dest.pos, v);
+        if (controls) {
+          controls.target.lerpVectors(fromTgt, dest.tgt, v);
+          controls.update();
+        } else {
+          camera.lookAt(dest.tgt);
+        }
+        camera.fov = fromFov + (dest.fov - fromFov) * v;
+        camera.updateProjectionMatrix();
+        invalidate(); // wake one demand frame per tween tick
+      },
+    });
+    return () => flight.stop();
+  }, [muscle, dest, invalidate]);
 
-    const ctl = state.controls;
-    if (ctl) {
-      ctl.target.lerp(dest.tgt, k);
-      ctl.update();
-    } else {
-      cam.lookAt(dest.tgt);
-    }
-    if (Math.abs(cam.fov - dest.fov) > 0.05) {
-      cam.fov += (dest.fov - cam.fov) * k;
-      cam.updateProjectionMatrix();
-    }
-    // Keep demanding frames until the dolly settles, then sleep.
-    if (cam.position.distanceTo(dest.pos) > 0.004) invalidate();
-  });
   return null;
 }
 
@@ -140,7 +147,8 @@ function ParallaxGroup({ pointerRef, children }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* ProceduralAvatar — built-in humanoid; target mesh goes emissive.     */
+/* ProceduralAvatar — built-in humanoid; target mesh goes emissive.    */
+/* Every mesh carries a registry name (Lats/Chest/Shoulders/...).      */
 /* ------------------------------------------------------------------ */
 function MuscleMesh({ active, ...props }) {
   const mat = useMemo(
@@ -173,75 +181,75 @@ function ProceduralAvatar({ muscle }) {
       </mesh>
 
       {/* legs */}
-      <MuscleMesh active={is('quads')} position={[-0.19, 0.72, 0]}>
+      <MuscleMesh name="Quads_L" active={is('quads')} position={[-0.19, 0.72, 0]}>
         <cylinderGeometry args={[0.13, 0.1, 0.72, 20]} />
       </MuscleMesh>
-      <MuscleMesh active={is('quads')} position={[0.19, 0.72, 0]}>
+      <MuscleMesh name="Quads_R" active={is('quads')} position={[0.19, 0.72, 0]}>
         <cylinderGeometry args={[0.13, 0.1, 0.72, 20]} />
       </MuscleMesh>
-      <MuscleMesh active={false} position={[-0.19, 0.2, 0]}>
+      <MuscleMesh name="Calves_L" active={false} position={[-0.19, 0.2, 0]}>
         <cylinderGeometry args={[0.085, 0.065, 0.42, 16]} />
       </MuscleMesh>
-      <MuscleMesh active={false} position={[0.19, 0.2, 0]}>
+      <MuscleMesh name="Calves_R" active={false} position={[0.19, 0.2, 0]}>
         <cylinderGeometry args={[0.085, 0.065, 0.42, 16]} />
       </MuscleMesh>
 
       {/* pelvis + glutes */}
-      <MuscleMesh active={false} position={[0, 1.1, 0]}>
+      <MuscleMesh name="Pelvis" active={false} position={[0, 1.1, 0]}>
         <boxGeometry args={[0.44, 0.22, 0.26]} />
       </MuscleMesh>
-      <MuscleMesh active={is('glutes')} position={[0, 1.06, -0.17]} scale={[1, 0.72, 0.5]}>
+      <MuscleMesh name="Glutes" active={is('glutes')} position={[0, 1.06, -0.17]} scale={[1, 0.72, 0.5]}>
         <sphereGeometry args={[0.2, 20, 16]} />
       </MuscleMesh>
 
       {/* torso: abs + chest */}
-      <MuscleMesh active={false} position={[0, 1.32, 0]}>
+      <MuscleMesh name="Abs" active={false} position={[0, 1.32, 0]}>
         <boxGeometry args={[0.4, 0.24, 0.24]} />
       </MuscleMesh>
-      <MuscleMesh active={is('chest')} position={[0, 1.58, 0.02]}>
+      <MuscleMesh name="Chest" active={is('chest')} position={[0, 1.58, 0.02]}>
         <boxGeometry args={[0.52, 0.3, 0.28]} />
       </MuscleMesh>
 
       {/* lats: two angled wings on the back */}
-      <MuscleMesh active={is('lats')} position={[-0.2, 1.5, -0.14]} rotation={[0.15, 0.35, 0.35]}>
+      <MuscleMesh name="Lats_L" active={is('lats')} position={[-0.2, 1.5, -0.14]} rotation={[0.15, 0.35, 0.35]}>
         <boxGeometry args={[0.2, 0.4, 0.08]} />
       </MuscleMesh>
-      <MuscleMesh active={is('lats')} position={[0.2, 1.5, -0.14]} rotation={[0.15, -0.35, -0.35]}>
+      <MuscleMesh name="Lats_R" active={is('lats')} position={[0.2, 1.5, -0.14]} rotation={[0.15, -0.35, -0.35]}>
         <boxGeometry args={[0.2, 0.4, 0.08]} />
       </MuscleMesh>
 
       {/* shoulders */}
-      <MuscleMesh active={is('shoulders')} position={[-0.34, 1.68, 0]}>
+      <MuscleMesh name="Shoulders_L" active={is('shoulders')} position={[-0.34, 1.68, 0]}>
         <sphereGeometry args={[0.13, 20, 16]} />
       </MuscleMesh>
-      <MuscleMesh active={is('shoulders')} position={[0.34, 1.68, 0]}>
+      <MuscleMesh name="Shoulders_R" active={is('shoulders')} position={[0.34, 1.68, 0]}>
         <sphereGeometry args={[0.13, 20, 16]} />
       </MuscleMesh>
 
       {/* arms: upper + biceps + forearm */}
       {[-1, 1].map((s) => (
         <group key={s}>
-          <MuscleMesh active={false} position={[s * 0.4, 1.5, 0]} rotation={[0, 0, s * 0.12]}>
+          <MuscleMesh name={s < 0 ? 'UpperArm_L' : 'UpperArm_R'} active={false} position={[s * 0.4, 1.5, 0]} rotation={[0, 0, s * 0.12]}>
             <cylinderGeometry args={[0.075, 0.065, 0.34, 14]} />
           </MuscleMesh>
-          <MuscleMesh active={is('biceps')} position={[s * 0.43, 1.42, 0.05]} scale={[1, 1.25, 1]}>
+          <MuscleMesh name={s < 0 ? 'Biceps_L' : 'Biceps_R'} active={is('biceps')} position={[s * 0.43, 1.42, 0.05]} scale={[1, 1.25, 1]}>
             <sphereGeometry args={[0.085, 16, 14]} />
           </MuscleMesh>
-          <MuscleMesh active={false} position={[s * 0.44, 1.14, 0]} rotation={[0, 0, s * 0.06]}>
+          <MuscleMesh name={s < 0 ? 'Forearm_L' : 'Forearm_R'} active={false} position={[s * 0.44, 1.14, 0]} rotation={[0, 0, s * 0.06]}>
             <cylinderGeometry args={[0.06, 0.05, 0.3, 14]} />
           </MuscleMesh>
         </group>
       ))}
 
       {/* neck + head */}
-      <MuscleMesh active={false} position={[0, 1.8, 0]}>
+      <MuscleMesh name="Neck" active={false} position={[0, 1.8, 0]}>
         <cylinderGeometry args={[0.07, 0.08, 0.12, 14]} />
       </MuscleMesh>
-      <MuscleMesh active={false} position={[0, 1.98, 0]}>
+      <MuscleMesh name="Head" active={false} position={[0, 1.98, 0]}>
         <sphereGeometry args={[0.14, 24, 20]} />
       </MuscleMesh>
       {/* visor slit */}
-      <mesh position={[0, 1.99, 0.115]}>
+      <mesh name="Visor" position={[0, 1.99, 0.115]}>
         <boxGeometry args={[0.16, 0.03, 0.02]} />
         <meshBasicMaterial color={NEON} />
       </mesh>
@@ -321,7 +329,7 @@ export default function Avatar3D() {
         <ambientLight intensity={0.55} />
         <spotLight position={[4, 6, 5]} angle={0.5} intensity={1.4} color="#ffffff" />
         <pointLight position={[-4, 2, 1]} intensity={12} color={NEON} distance={12} />
-        <pointLight position={[4, 1.5, -2]} intensity={10} color="#ff2d55" distance={12} />
+        <pointLight position={[4, 1.5, -2]} intensity={10} color="#DC2626" distance={12} />
 
         <gridHelper args={[14, 28, '#123322', '#0a0e0d']} position={[0, -0.58, 0]} />
 
@@ -363,7 +371,7 @@ export default function Avatar3D() {
         <div className="pointer-events-auto flex gap-1.5">
           <button
             onClick={resetAvatarTarget}
-            className="clip-tag-sm flex items-center gap-1.5 border border-white/20 bg-black/70 px-2 py-1.5 text-[9px] tracking-[0.2em] text-chrome-dim backdrop-blur-xl transition-colors hover:border-white/40 hover:text-bone"
+            className="clip-tag-sm flex items-center gap-1.5 border border-white/10 bg-black/70 px-2 py-1.5 text-[9px] tracking-[0.2em] text-chrome-dim backdrop-blur-xl transition-colors hover:border-white/40 hover:text-bone"
             title="Reset camera"
           >
             <RotateCcw size={11} /> RESET

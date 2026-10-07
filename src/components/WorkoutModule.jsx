@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, RotateCcw, Crosshair } from 'lucide-react';
-import SlideToTension from './SlideToTension.jsx';
-import { useStore } from '../store/Store.js';
+import SlideTensionInput from './SlideTensionInput.jsx';
+import { useStore } from '../store/useStore.js';
 
 /**
  * WorkoutModule — horizontal carousel of set capsules.
@@ -35,7 +35,7 @@ export default function WorkoutModule() {
               className={`clip-tag-sm border px-2.5 py-1.5 text-[10px] font-bold tracking-[0.18em] transition-colors ${
                 active
                   ? 'border-toxic/70 bg-toxic/10 text-toxic shadow-glow-green'
-                  : 'border-white/15 bg-white/[0.02] text-chrome-dim hover:border-white/30 hover:text-bone'
+                  : 'border-white/10 bg-white/[0.02] text-chrome-dim hover:border-white/30 hover:text-bone'
               }`}
               title={`Target ${e.muscleLabel} on the avatar`}
             >
@@ -60,7 +60,7 @@ export default function WorkoutModule() {
           </span>
           <button
             onClick={() => resetExercise(ex.id)}
-            className="flex items-center gap-1 border border-white/15 px-2 py-1 text-[9px] tracking-[0.2em] text-chrome-dim transition-colors hover:border-blood/60 hover:text-blood"
+            className="flex items-center gap-1 border border-white/10 px-2 py-1 text-[9px] tracking-[0.2em] text-chrome-dim transition-colors hover:border-blood/60 hover:text-blood"
             title="Reset sets"
           >
             <RotateCcw size={11} /> RST
@@ -77,6 +77,7 @@ export default function WorkoutModule() {
             ) : (
               <ActiveCapsule
                 key={set.id}
+                exId={ex.id}
                 set={set}
                 index={idx}
                 isNext={ex.sets.slice(0, idx).every((s) => s.done)}
@@ -96,7 +97,7 @@ function DoneCapsule({ set, index }) {
     <motion.div
       layout
       initial={{ opacity: 0, x: 90, scale: 0.9 }}
-      animate={{ opacity: 1, x: 0, scale: 0.96, y: 3 }}
+      animate={{ opacity: 1, x: 0, scale: 0.95, y: 3, filter: 'brightness(1.5)' }}
       exit={{ opacity: 0, x: -90, scale: 0.85 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
       className="clip-cut-sm flex w-[118px] shrink-0 flex-col items-center gap-1 border border-toxic/60 bg-toxic/[0.07] px-2 py-3 shadow-glow-green"
@@ -116,7 +117,7 @@ function DoneCapsule({ set, index }) {
 }
 
 /** Pending set: Slide-to-Tension entry + confirm. Only the next one is editable. */
-function ActiveCapsule({ set, index, isNext, onConfirm }) {
+function ActiveCapsule({ exId, set, index, isNext, onConfirm }) {
   const [w, setW] = useState(set.w);
   const [r, setR] = useState(set.r);
 
@@ -157,8 +158,8 @@ function ActiveCapsule({ set, index, isNext, onConfirm }) {
         </span>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <SlideToTension label="W" unit="KG" min={0} max={200} step={2.5} value={w} onChange={setW} trackPx={64} compact />
-        <SlideToTension label="R" unit="REPS" min={1} max={50} step={1} value={r} onChange={setR} trackPx={64} compact />
+        <SlideTensionInput label="W" unit="KG" min={0} max={200} step={2.5} value={w} onChange={setW} trackPx={64} compact />
+        <SlideTensionInput label="R" unit="REPS" min={1} max={50} step={1} value={r} onChange={setR} trackPx={64} compact />
       </div>
       <motion.button
         onClick={() => onConfirm(w, r)}

@@ -5,7 +5,7 @@ import Dashboard from './components/Dashboard.jsx';
 import BottomTicker from './components/BottomTicker.jsx';
 import SettingsTerminal from './components/SettingsTerminal.jsx';
 import VoiceWidget from './components/VoiceWidget.jsx';
-import { useStore } from './store/Store.js';
+import { useStore } from './store/useStore.js';
 
 export default function App() {
   const tickClock = useStore((s) => s.tickClock);
@@ -26,11 +26,11 @@ export default function App() {
   }, [tickClock, tickFx, tickProgress]);
 
   // Voice overlay: driven by the Electron global shortcut (Alt+Space)
-  // via IPC `voice:toggle`. Browser fallback: press "V".
+  // via IPC `voice-input-open`. Browser fallback: press "V".
   useEffect(() => {
     let detach;
-    if (window.electronAPI?.onVoiceToggle) {
-      detach = window.electronAPI.onVoiceToggle(() => toggleVoice());
+    if (window.electronAPI?.onVoiceInputOpen) {
+      detach = window.electronAPI.onVoiceInputOpen(() => toggleVoice());
     }
     const onKey = (e) => {
       if ((e.key === 'v' || e.key === 'V') && !e.metaKey && !e.ctrlKey && !e.altKey) {
@@ -53,7 +53,7 @@ export default function App() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 55% 45% at 15% 0%, rgba(0,255,102,0.07), transparent 70%), radial-gradient(ellipse 50% 45% at 90% 100%, rgba(255,45,85,0.06), transparent 70%), radial-gradient(ellipse 60% 50% at 50% 50%, transparent 30%, rgba(0,0,0,0.5) 100%)',
+            'radial-gradient(ellipse 55% 45% at 15% 0%, rgba(16,185,129,0.07), transparent 70%), radial-gradient(ellipse 50% 45% at 90% 100%, rgba(220,38,38,0.06), transparent 70%), radial-gradient(ellipse 60% 50% at 50% 50%, transparent 30%, rgba(0,0,0,0.5) 100%)',
         }}
       />
       <div className="bg-scanlines pointer-events-none absolute inset-0 opacity-60" />

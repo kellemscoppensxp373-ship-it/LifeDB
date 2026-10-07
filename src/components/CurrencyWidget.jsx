@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowLeftRight } from 'lucide-react';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 function FxRow({ code, rate, delta }) {
   const up = delta >= 0;
@@ -32,7 +32,7 @@ export default function CurrencyWidget() {
   const fx = useStore((s) => s.fx);
 
   return (
-    <div className="clip-cut-sm flex h-full items-center gap-3 border border-white/20 bg-black/60 px-3 py-1.5 backdrop-blur-2xl transition-colors hover:border-toxic/60">
+    <div className="clip-cut-sm flex h-full items-center gap-3 border border-white/10 bg-black/60 px-3 py-1.5 backdrop-blur-2xl transition-colors hover:border-toxic/60">
       <ArrowLeftRight size={18} strokeWidth={1.5} className="shrink-0 text-chrome" />
       <div className="flex flex-col gap-1.5">
         <FxRow code="USD" rate={fx.USD.rate} delta={fx.USD.delta} />

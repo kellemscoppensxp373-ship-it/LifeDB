@@ -4,7 +4,7 @@ REM  LIFE DASHBOARD :: SETUP
 REM  Glass Monolith // Y2K Cyber-Gothic // Electron + React + Vite
 REM
 REM  Usage: double-click setup.bat from the project root.
-REM  It scaffolds (if needed), installs deps, creates folders,
+REM  Scaffolds Vite, installs deps, creates the tree, inits Git,
 REM  and prepares the local AI voice service.
 REM ================================================================
 setlocal EnableDelayedExpansion
@@ -35,7 +35,7 @@ for /f "tokens=*" %%v in ('node --version') do echo  [OK] Node %%v detected.
 REM --- 1. Initialize a Vite React project -------------------------------
 if not exist package.json (
   echo.
-  echo  [1/5] Scaffolding Vite React project...
+  echo  [1/6] Scaffolding Vite React project...
   call npm create vite@latest . -- --template react
   if errorlevel 1 (
     echo  [FATAL] Vite scaffold failed.
@@ -44,22 +44,23 @@ if not exist package.json (
   )
 ) else (
   echo.
-  echo  [1/5] package.json found - skipping Vite scaffold.
+  echo  [1/6] package.json found - skipping Vite scaffold.
 )
 
 REM --- 2. Install all dependencies --------------------------------------
 echo.
-echo  [2/5] Installing runtime dependencies...
-call npm install electron react react-dom tailwindcss framer-motion @react-three/fiber @react-three/drei zustand recharts lucide-react three
+echo  [2/6] Installing runtime dependencies...
+call npm install electron react react-dom tailwindcss framer-motion @react-three/fiber @react-three/drei zustand recharts lucide-react concurrently wait-on cross-env three
 if errorlevel 1 (
   echo  [FATAL] Runtime dependency install failed.
   pause
   exit /b 1
 )
+REM NOTE: `three` rides along as the required peer of @react-three/fiber + drei.
 
 echo.
-echo  [2/5] Installing dev/tooling dependencies...
-call npm install -D vite @vitejs/plugin-react autoprefixer postcss concurrently wait-on electron-builder
+echo  [2/6] Installing dev/tooling dependencies...
+call npm install -D vite @vitejs/plugin-react autoprefixer postcss electron-builder
 if errorlevel 1 (
   echo  [FATAL] Dev dependency install failed.
   pause
@@ -67,20 +68,36 @@ if errorlevel 1 (
 )
 echo  [OK] All dependencies installed.
 
-REM --- 3. Create directory structure -------------------------------------
+REM --- 3. Create directory tree ------------------------------------------
 echo.
-echo  [3/5] Creating directory structure...
+echo  [3/6] Creating directory tree...
 if not exist src\components mkdir src\components
 if not exist src\store mkdir src\store
 if not exist src\electron mkdir src\electron
-if not exist src\assets mkdir src\assets
+if not exist src\assets\models mkdir src\assets\models
 if not exist electron mkdir electron
 if not exist local_ai_service mkdir local_ai_service
-echo  [OK] src\components, src\store, src\electron, src\assets, electron, local_ai_service
+echo  [OK] src\components, src\store, src\electron, src\assets\models ^(+ electron, local_ai_service^)
 
-REM --- 4. Local AI service (future local voice processing) ----------------
+REM --- 4. Initialize Git repository ---------------------------------------
 echo.
-echo  [4/5] Writing local_ai_service\requirements.txt ...
+echo  [4/6] Initializing Git repository...
+where git >nul 2>nul
+if errorlevel 1 (
+  echo  [WARN] git not found - skipping git init. Install Git, then run: git init
+) else (
+  if not exist .git (
+    call git init
+    call git branch -M main
+    echo  [OK] git init complete on branch main.
+  ) else (
+    echo  [OK] .git already exists - skipping git init.
+  )
+)
+
+REM --- 5. Local AI service (future local voice processing) ----------------
+echo.
+echo  [5/6] Writing local_ai_service\requirements.txt ...
 (
   echo flask^>=3.0.0
   echo vosk^>=0.3.22
@@ -96,9 +113,9 @@ if not errorlevel 1 (
   echo         python -m pip install -r local_ai_service\requirements.txt
 )
 
-REM --- 5. Tailwind + env bootstrap ----------------------------------------
+REM --- 6. Tailwind + env bootstrap ----------------------------------------
 echo.
-echo  [5/5] Bootstrapping Tailwind config and env...
+echo  [6/6] Bootstrapping Tailwind config and env...
 if not exist tailwind.config.js (
   call npx tailwindcss init -p
   if errorlevel 1 echo  [WARN] tailwind init failed - config may already exist or network blocked.
@@ -122,6 +139,7 @@ echo.
 echo   Run the desktop app:  npm run electron:dev
 echo   Web-only preview:     npm run dev
 echo   Build installer:      npm run dist
+echo   Push to GitHub:       auto_push.bat
 echo  ======================================================
 echo.
 pause

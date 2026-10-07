@@ -21,7 +21,7 @@ export default function GlassPanel({
       initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={`${clip} glass relative border border-white/20 shadow-panel ${className}`}
+      className={`${clip} glass relative rounded-none border border-white/10 shadow-panel ${className}`}
     >
       {/* HUD corner ticks */}
       <span className="pointer-events-none absolute left-0 top-0 h-3 w-3 border-l-2 border-t-2 border-toxic/80" />

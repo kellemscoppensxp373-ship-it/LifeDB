@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
-import { useStore, formatUptime } from '../store/Store.js';
+import { useStore, formatUptime } from '../store/useStore.js';
 
 /**
  * BottomTicker — constant marquee pinned to the absolute bottom.

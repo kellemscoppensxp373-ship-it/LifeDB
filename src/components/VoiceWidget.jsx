@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { Mic, MicOff, X, AudioWaveform } from 'lucide-react';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 const BARS = [10, 18, 26, 34, 26, 18, 10];
 
 /**
  * VoiceWidget — minimalist glass recorder overlay.
- * Summoned by the Electron global shortcut Alt+Space (IPC `voice:toggle`).
+ * Summoned by the Electron global shortcut Alt+Space (IPC `voice-input-open`).
  */
 export default function VoiceWidget() {
   const voice = useStore((s) => s.voice);
@@ -22,7 +22,7 @@ export default function VoiceWidget() {
       animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
       exit={{ opacity: 0, y: -30, scale: 0.96, filter: 'blur(6px)' }}
       transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-      className="clip-cut glass-deep fixed left-1/2 top-20 z-40 w-[min(440px,calc(100vw-3rem))] -translate-x-1/2 border border-white/20 shadow-panel"
+      className="clip-cut glass-deep fixed left-1/2 top-20 z-40 w-[min(440px,calc(100vw-3rem))] -translate-x-1/2 border border-white/10 shadow-panel"
     >
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
         <span className="flex items-center gap-2 text-[10px] tracking-[0.3em] text-chrome-dim">
@@ -30,7 +30,7 @@ export default function VoiceWidget() {
           VOICE CAPTURE
         </span>
         <div className="flex items-center gap-2">
-          <kbd className="border border-white/15 bg-white/[0.04] px-1.5 py-0.5 text-[9px] tracking-[0.2em] text-chrome-dim">
+          <kbd className="border border-white/10 bg-white/[0.04] px-1.5 py-0.5 text-[9px] tracking-[0.2em] text-chrome-dim">
             ALT+SPACE
           </kbd>
           <button

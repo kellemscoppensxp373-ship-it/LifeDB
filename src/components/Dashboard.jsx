@@ -2,10 +2,10 @@ import { Activity, BarChart3, Flame, Dumbbell, ScanFace, ListChecks } from 'luci
 import GlassPanel from './GlassPanel.jsx';
 import Heatmap from './Heatmap.jsx';
 import NeonChart from './NeonChart.jsx';
-import HoldToBreak from './HoldToBreak.jsx';
+import HoldToBreakBar from './HoldToBreakBar.jsx';
 import WorkoutModule from './WorkoutModule.jsx';
 import Avatar3D from './Avatar3D.jsx';
-import { useStore } from '../store/Store.js';
+import { useStore } from '../store/useStore.js';
 
 /**
  * Dashboard — main grid.
@@ -45,7 +45,7 @@ export default function Dashboard() {
           right={
             <button
               onClick={incTasks}
-              className="clip-tag-sm group flex items-center gap-2 border border-white/20 bg-white/[0.04] px-2.5 py-1 text-[10px] tracking-[0.2em] text-bone/80 transition-colors hover:border-toxic/70 hover:text-toxic"
+              className="clip-tag-sm group flex items-center gap-2 border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] tracking-[0.2em] text-bone/80 transition-colors hover:border-toxic/70 hover:text-toxic"
               title="Log a completed task"
             >
               <ListChecks size={12} strokeWidth={1.75} />
@@ -69,7 +69,7 @@ export default function Dashboard() {
         >
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {habits.map((h) => (
-              <HoldToBreak
+              <HoldToBreakBar
                 key={h.id}
                 label={h.label}
                 streak={h.streak}

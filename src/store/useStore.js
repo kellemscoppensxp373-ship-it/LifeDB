@@ -229,6 +229,11 @@ export const useStore = create((set, get) => ({
   accent: 'toxic',
   setAccent: (accent) => set({ accent }),
 
+  // ---------- SlideTensionInput registry (numeric entries persist here) ----------
+  tensionValues: {},
+  setTensionValue: (id, value) =>
+    set((s) => ({ tensionValues: { ...s.tensionValues, [id]: value } })),
+
   // ---------- Voice overlay (Alt+Space global shortcut) ----------
   voice: { open: false, recording: false, transcript: ['> AWAITING INPUT...'] },
   toggleVoice: () => set((s) => ({ voice: { ...s.voice, open: !s.voice.open } })),

@@ -3,7 +3,8 @@ import { Hexagon } from 'lucide-react';
 import WeatherWidget from './WeatherWidget.jsx';
 import CurrencyWidget from './CurrencyWidget.jsx';
 import MusicPlayer from './MusicPlayer.jsx';
-import { useStore } from '../store/Store.js';
+import WindowControls from './WindowControls.jsx';
+import { useStore } from '../store/useStore.js';
 
 /**
  * TopBar — system + media command strip.
@@ -21,7 +22,7 @@ export default function TopBar() {
       className="relative z-20 flex flex-wrap items-stretch gap-2 border-b border-white/10 bg-black/60 px-3 py-2 backdrop-blur-2xl sm:px-4"
     >
       {/* Brand block */}
-      <div className="clip-cut-sm flex min-w-[210px] flex-1 items-center gap-3 border border-white/20 bg-black/60 px-3 py-1.5 sm:flex-none">
+      <div className="clip-cut-sm flex min-w-[210px] flex-1 items-center gap-3 border border-white/10 bg-black/60 px-3 py-1.5 sm:flex-none">
         <span className="relative flex items-center justify-center">
           <Hexagon size={26} className="text-toxic" strokeWidth={1.5} />
           <span className="absolute h-1.5 w-1.5 bg-toxic shadow-glow-green" />
